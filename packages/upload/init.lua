@@ -53,6 +53,7 @@ M.uploadHotkey = hs.hotkey.bind(mods, key, function()
 
   -- 5. 启动任务
   if task then
+      task:setWorkingDirectory(hs.configdir) -- 设置工作目录为配置目录，避免 Volta 找不到当前目录的问题
       task:start()
   else
       hs.alert.show("Internal Error: Failed to create upload task")
