@@ -87,4 +87,31 @@ function M.get_file_path_from_clipboard()
   return nil
 end
 
+-- 获取 Finder 中当前选中的文件路径列表
+function M.get_selected_finder_files()
+    local script = [[
+        tell application "Finder"
+            set theSelection to selection
+            if (count of theSelection) is 0 then
+                return ""
+            end if
+            set pathList to {}
+            repeat with anItem in theSelection
+                set end of pathList to POSIX path of (anItem as alias)
+            end repeat
+            set AppleScript's text item delimiters to linefeed
+            return pathList as text
+        end tell
+    ]]
+    local success, result = hs.osascript.applescript(script)
+    if success and result and result ~= "" then
+        local paths = {}
+        for line in result:gmatch("[^\n]+") do
+            table.insert(paths, line)
+        end
+        return paths
+    end
+    return nil
+end
+
 return M

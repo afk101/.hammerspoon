@@ -34,6 +34,15 @@ cd ~/.hammerspoon
   - 窗口隐藏/被回收 → 重新拉起显示
   - 应用未运行 → 启动应用
 
+### 3. 图片压缩（packages/compress）
+
+快捷键压缩剪切板中的图片文件，压缩后文件保存在原文件同目录，文件名添加 `.min` 后缀。
+
+- 默认快捷键：`Cmd + Alt + E`
+- 配置项：`COMPRESS_SHORTCUT`、`COMPRESS_QUALITY`
+- 支持格式：PNG、JPEG、WebP、GIF、SVG
+- 命名规则：`a.png` → `a.min.png`，`a.min.png` → `a.min.min.png`
+
 ## 配置
 
 复制 `.env.example` 为 `.env`，按需修改配置项：
