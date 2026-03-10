@@ -38,7 +38,7 @@ cd ~/.hammerspoon
 
 快捷键压缩剪切板中的图片文件，压缩后文件保存在原文件同目录，文件名添加 `.min` 后缀。
 
-- 默认快捷键：`Cmd + Alt + E`
+- 默认快捷键：`Cmd + Alt + C`
 - 配置项：`COMPRESS_SHORTCUT`、`COMPRESS_QUALITY`
 - 支持格式：PNG、JPEG、WebP、GIF、SVG
 - 命名规则：`a.png` → `a.min.png`，`a.min.png` → `a.min.min.png`
