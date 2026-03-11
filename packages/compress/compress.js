@@ -29,6 +29,22 @@ const parsed = path.parse(filePath);
 const ext = parsed.ext.toLowerCase();
 const outputPath = path.join(parsed.dir, `${parsed.name}.min${parsed.ext}`);
 
+/**
+ * 处理压缩后文件比原文件更大的情况
+ * 当压缩结果反而更大时，删除压缩文件并复制原文件作为输出，保留原始质量
+ * @param {string} originalPath - 原始文件路径
+ * @param {string} compressedPath - 压缩后的文件路径
+ * @param {number} originalSize - 原始文件大小（字节）
+ * @param {number} compressedSize - 压缩后文件大小（字节）
+ */
+function handleOversizedOutput(originalPath, compressedPath, originalSize, compressedSize) {
+  fs.unlinkSync(compressedPath);
+  fs.copyFileSync(originalPath, compressedPath);
+  console.log(
+    `Compressed file is larger (${originalSize} -> ${compressedSize} bytes), keeping original file.`
+  );
+}
+
 try {
   if (ext === '.svg') {
     // SVG: 使用 svgo 进行 XML 级别优化
@@ -64,9 +80,15 @@ try {
   // 计算压缩率
   const originalSize = fs.statSync(filePath).size;
   const compressedSize = fs.statSync(outputPath).size;
-  const reduction = ((1 - compressedSize / originalSize) * 100).toFixed(1);
 
-  console.log(`Compressed: ${originalSize} -> ${compressedSize} bytes (${reduction}% reduction)`);
+  // 压缩后文件反而更大时，保留原文件
+  if (compressedSize >= originalSize) {
+    handleOversizedOutput(filePath, outputPath, originalSize, compressedSize);
+  } else {
+    const reduction = ((1 - compressedSize / originalSize) * 100).toFixed(1);
+    console.log(`Compressed: ${originalSize} -> ${compressedSize} bytes (${reduction}% reduction)`);
+  }
+
   console.log(`###COMPRESSED_START###${outputPath}###COMPRESSED_END###`);
 } catch (error) {
   console.error(error);

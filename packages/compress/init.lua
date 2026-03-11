@@ -12,46 +12,72 @@ if not mods or not key then
     key = "C"
 end
 
--- 压缩单个文件的函数
-local function compressFile(filePath, scriptPath, nodePath, onComplete)
-  local task = hs.task.new(nodePath, function(exitCode, stdOut, stdErr)
-    if exitCode == 0 then
-      local compressedPath = stdOut:match("###COMPRESSED_START###(.-)###COMPRESSED_END###")
-      if compressedPath and compressedPath ~= "" then
-        if onComplete then onComplete(compressedPath) end
-      else
-        print("压缩脚本输出: " .. stdOut)
-        hs.alert.show("⚠️Compress finished but no path returned: " .. filePath)
-      end
-    else
-      hs.alert.show("❌Compress Failed: " .. filePath)
-      print("压缩错误日志: " .. stdErr)
-    end
-  end, {scriptPath, filePath})
-
-  if task then
-    task:setWorkingDirectory(hs.configdir)
-    task:start()
-  else
-    hs.alert.show("Internal Error: Failed to create compress task")
+--- 处理批量压缩完成后的汇总提示与剪切板写入
+--- @param compressedPaths table 压缩成功的文件路径列表
+--- @param successCount number 压缩成功的文件数量
+--- @param failedCount number 压缩失败的文件数量
+local function handleBatchComplete(compressedPaths, successCount, failedCount)
+  if #compressedPaths > 0 then
+    hs.pasteboard.setContents(table.concat(compressedPaths, "\n"))
   end
+
+  if failedCount == 0 then
+    hs.alert.show("⭐️All " .. successCount .. " file(s) compressed!")
+  else
+    hs.alert.show("⚠️Compressed " .. successCount .. " file(s), " .. failedCount .. " failed.")
+  end
+end
+
+--- 压缩单个文件，使用通用 Node 脚本执行函数
+--- @param filePath string 要压缩的文件路径
+--- @param scriptPath string 压缩脚本的绝对路径
+--- @param onComplete function(compressedPath) 压缩成功时的回调
+--- @param onError function() 压缩失败时的回调
+local function compressFile(filePath, scriptPath, onComplete, onError)
+  Utils.runNodeScript(scriptPath, {filePath}, {
+    outputPattern = "###COMPRESSED_START###(.-)###COMPRESSED_END###",
+    onSuccess = function(compressedPath)
+      if onComplete then onComplete(compressedPath) end
+    end,
+    onPatternMissing = function(stdOut)
+      print("压缩脚本输出: " .. stdOut)
+      hs.alert.show("⚠️Compress finished but no path returned: " .. filePath)
+      if onError then onError() end
+    end,
+    onError = function(errInfo)
+      hs.alert.show("❌Compress Failed: " .. filePath)
+      print("压缩错误日志: " .. errInfo)
+      if onError then onError() end
+    end
+  })
 end
 
 M.compressHotkey = hs.hotkey.bind(mods, key, function()
   local scriptPath = hs.configdir .. "/packages/compress/compress.js"
-  local nodePath = Utils.findNodePath()
 
   -- 1. 优先尝试获取 Finder 中选中的文件
   local finderFiles = Utils.get_selected_finder_files()
   if finderFiles and #finderFiles > 0 then
     hs.alert.show("⏳Compressing " .. #finderFiles .. " file(s) from Finder...")
     local compressedPaths = {}
+    local totalCount = #finderFiles
+    -- 使用双计数器跟踪成功和失败的任务数量，确保所有任务完成后触发汇总回调
+    local completedCount = 0
+    local failedCount = 0
+
     for _, fp in ipairs(finderFiles) do
-      compressFile(fp, scriptPath, nodePath, function(compressedPath)
+      compressFile(fp, scriptPath, function(compressedPath)
+        -- 压缩成功回调
         table.insert(compressedPaths, compressedPath)
-        if #compressedPaths == #finderFiles then
-          hs.pasteboard.setContents(table.concat(compressedPaths, "\n"))
-          hs.alert.show("⭐️All " .. #compressedPaths .. " file(s) compressed!")
+        completedCount = completedCount + 1
+        if completedCount + failedCount == totalCount then
+          handleBatchComplete(compressedPaths, completedCount, failedCount)
+        end
+      end, function()
+        -- 压缩失败回调
+        failedCount = failedCount + 1
+        if completedCount + failedCount == totalCount then
+          handleBatchComplete(compressedPaths, completedCount, failedCount)
         end
       end)
     end
@@ -66,7 +92,7 @@ M.compressHotkey = hs.hotkey.bind(mods, key, function()
   end
 
   hs.alert.show("⏳Compressing: " .. filePath)
-  compressFile(filePath, scriptPath, nodePath, function(compressedPath)
+  compressFile(filePath, scriptPath, function(compressedPath)
     hs.pasteboard.setContents(compressedPath)
     hs.alert.show("⭐️Compress Success! Path copied.")
   end)

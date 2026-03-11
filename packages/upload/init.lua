@@ -25,39 +25,27 @@ M.uploadHotkey = hs.hotkey.bind(mods, key, function()
 
   -- 3. 准备执行上传脚本的参数
   local scriptPath = hs.configdir .. "/packages/upload/upload.js"
-  local nodePath = Utils.findNodePath()
 
-  -- 4. 创建异步任务执行 Node.js 上传脚本
-  local task = hs.task.new(nodePath, function(exitCode, stdOut, stdErr)
-    -- 回调函数：当任务结束时执行
-    if exitCode == 0 then
-      -- 任务成功，尝试从输出中提取 URL
-      -- 匹配模式 ###URL_START###...###URL_END###
-      local url = stdOut:match("###URL_START###(.-)###URL_END###")
-
-      if url and url ~= "" then
-          -- 5. 提取成功：将 URL 写入剪切板并提示成功
-          hs.pasteboard.setContents(url)
-          hs.alert.show("⭐️Upload Success! URL copied.")
-      else
-          -- 脚本执行成功但没捕获到 URL（可能是输出格式不对）
-          print("上传脚本输出: " .. stdOut)
-          hs.alert.show("⚠️Upload finished but no URL returned")
-      end
-    else
+  -- 4. 使用通用 Node 脚本执行函数完成上传
+  -- 匹配模式 ###URL_START###...###URL_END###
+  Utils.runNodeScript(scriptPath, {filePath}, {
+    outputPattern = "###URL_START###(.-)###URL_END###",
+    onSuccess = function(url)
+      -- 提取成功：将 URL 写入剪切板并提示成功
+      hs.pasteboard.setContents(url)
+      hs.alert.show("⭐️Upload Success! URL copied.")
+    end,
+    onPatternMissing = function(stdOut)
+      -- 脚本执行成功但没捕获到 URL（可能是输出格式不对）
+      print("上传脚本输出: " .. stdOut)
+      hs.alert.show("⚠️Upload finished but no URL returned")
+    end,
+    onError = function(errInfo)
       -- 任务失败（ExitCode 非 0）
       hs.alert.show("❌Upload Failed")
-      print("上传错误日志: " .. stdErr)
+      print("上传错误日志: " .. errInfo)
     end
-  end, {scriptPath, filePath}) -- 传递参数：脚本路径和文件路径
-
-  -- 5. 启动任务
-  if task then
-      task:setWorkingDirectory(hs.configdir) -- 设置工作目录为配置目录，避免 Volta 找不到当前目录的问题
-      task:start()
-  else
-      hs.alert.show("Internal Error: Failed to create upload task")
-  end
+  })
 end)
 
 return M

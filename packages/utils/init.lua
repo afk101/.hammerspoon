@@ -6,7 +6,8 @@ local modules = {
     "packages.utils.node",
     "packages.utils.shortcut",
     "packages.utils.text",
-    "packages.utils.clipboard"
+    "packages.utils.clipboard",
+    "packages.utils.task"
 }
 
 -- 动态导出所有子模块的函数
