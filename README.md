@@ -12,7 +12,7 @@ cd ~/.hammerspoon
 
 #### 剪切板文件获取功能支持
 
-目前脚本支持从以下 4 种剪切板内容中自动获取或生成文件路径：
+目前脚本支持从以下 5 种剪切板内容中自动获取或生成文件路径：
 
 1.  **Finder 文件选择**：
     *   直接获取在 Finder 中复制的文件（ctrl+c）（通过 AppleScript 实现）。
@@ -22,6 +22,8 @@ cd ~/.hammerspoon
     *   如果剪切板包含图像数据（例如截图工具直接复制），会自动保存为临时 PNG 文件并返回路径。
 4.  **SVG 代码文本**：
     *   如果剪切板包含 SVG 源代码（以 `<svg` 开头并以 `</svg>` 结尾），会自动检测并保存为临时 SVG 文件。
+5.  **文件绝对路径文本**：
+    *   如果剪切板包含纯文本形式的文件绝对路径（如 `/Users/xxx/image.png`），会自动检测路径是否存在且为普通文件（非目录），支持所有文件类型。适用于从终端或其他应用复制的文件完整路径。
 
 ### 2. 豆包浏览器快捷切换（packages/doubao-browser）
 
@@ -38,7 +40,7 @@ cd ~/.hammerspoon
 
 快捷键压缩剪切板中的图片文件，压缩后文件保存在原文件同目录，文件名添加 `.min` 后缀。
 
-- 默认快捷键：`Cmd + Alt + C`
+- 默认快捷键：`Cmd + Alt + M`
 - 配置项：`COMPRESS_SHORTCUT`、`COMPRESS_QUALITY`
 - 支持格式：PNG、JPEG、WebP、GIF、SVG
 - 命名规则：`a.png` → `a.min.png`，`a.min.png` → `a.min.min.png`
