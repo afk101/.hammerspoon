@@ -6,10 +6,10 @@ local Utils = require("packages.utils")
 local env = Utils.loadEnv()
 local mods, key = Utils.parseShortcut(env["COMPRESS_SHORTCUT"])
 
--- 如果未配置或解析失败，使用默认快捷键 Cmd + Alt + C
+-- 如果未配置或解析失败，使用默认快捷键 Cmd + Alt + M
 if not mods or not key then
     mods = {"cmd", "alt"}
-    key = "C"
+    key = "M"
 end
 
 --- 处理批量压缩完成后的汇总提示与剪切板写入
