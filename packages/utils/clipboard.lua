@@ -2,6 +2,19 @@ local Text = require("packages.utils.text")
 local File = require("packages.utils.file")
 local M = {}
 
+--- 检查给定字符串是否为已存在的文件绝对路径
+-- @param str string 待检查的字符串
+-- @return boolean 是否为已存在的文件绝对路径
+local function is_existing_file_path(str)
+  -- 检查是否以 "/" 开头（macOS 绝对路径）
+  if string.sub(str, 1, 1) ~= "/" then
+    return false
+  end
+  -- 使用 hs.fs.attributes 检查文件是否存在且为普通文件（非目录）
+  local attrs = hs.fs.attributes(str)
+  return attrs ~= nil and attrs.mode == "file"
+end
+
 -- 从剪切板获取文件路径的核心函数
 function M.get_file_path_from_clipboard()
   -- 方法 1: 使用 AppleScript 获取（这是获取 Finder 选中文件路径最可靠的方法）
@@ -81,6 +94,15 @@ function M.get_file_path_from_clipboard()
               return file_path
           end
       end
+  end
+
+  -- 方法 5: 检查剪切板文本是否为已存在的文件绝对路径
+  -- 适用于从终端或其他应用复制的文件完整路径
+  if text_content then
+    local trimmed = string.match(text_content, "^%s*(.-)%s*$")
+    if trimmed and is_existing_file_path(trimmed) then
+      return trimmed
+    end
   end
 
   -- 如果所有方法都失败，返回 nil
