@@ -1,0 +1,12 @@
+{
+  "name": "merge-lines",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "setup": "echo '纯 Lua 包，无需安装依赖'"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "剪贴板多行文本合并为一行工具"
+}
