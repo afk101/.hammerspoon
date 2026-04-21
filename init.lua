@@ -1,5 +1,5 @@
 require("packages.upload")
-require("packages.doubao-browser")
+require("packages.chrome")
 require("packages.compress")
 require("packages.merge-lines")
 require("packages.cmux")

@@ -25,12 +25,12 @@ cd ~/.hammerspoon
 5.  **文件绝对路径文本**：
     *   如果剪切板包含纯文本形式的文件绝对路径（如 `/Users/xxx/image.png`），会自动检测路径是否存在且为普通文件（非目录），支持所有文件类型。适用于从终端或其他应用复制的文件完整路径。
 
-### 2. 豆包浏览器快捷切换（packages/doubao-browser）
+### 2. Chrome 快捷切换（packages/chrome）
 
-通过快捷键切换豆包浏览器的显示/隐藏状态。
+通过快捷键切换 Chrome 的显示/隐藏状态。
 
 - 默认快捷键：`Alt + Space`
-- 配置项：`DOUBAO_BROWSER_SHORTCUT`、`DOUBAO_BROWSER_APP`、`DOUBAO_BROWSER_BUNDLE`
+- 配置项：`CHROME_SHORTCUT`、`CHROME_APP`、`CHROME_BUNDLE`
 - 行为：
   - 窗口可见 → 隐藏
   - 窗口隐藏/被回收 → 重新拉起显示

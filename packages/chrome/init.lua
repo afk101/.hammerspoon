@@ -4,14 +4,14 @@ local Utils = require("packages.utils")
 -- 从 .env 读取配置
 local env = Utils.loadEnv()
 
--- 豆包浏览器 bundleID，用于查找正在运行的应用
-local bundleID = env["DOUBAO_BROWSER_BUNDLE"] or "com.bot.pc.doubao.browser"
+-- Chrome bundleID，用于查找正在运行的应用
+local bundleID = env["CHROME_BUNDLE"] or "com.google.Chrome"
 
--- 豆包浏览器应用路径，用于启动应用
-local appPath = env["DOUBAO_BROWSER_APP"] or "/Applications/Doubao.app/Contents/Helpers/Doubao Browser.app"
+-- Chrome 应用路径，用于启动应用
+local appPath = env["CHROME_APP"] or "/Applications/Google Chrome.app"
 
 -- 解析快捷键配置
-local mods, key = Utils.parseShortcut(env["DOUBAO_BROWSER_SHORTCUT"])
+local mods, key = Utils.parseShortcut(env["CHROME_SHORTCUT"])
 
 -- 如果未配置或解析失败，使用默认快捷键 Alt + Space
 if not mods or not key then
@@ -19,7 +19,7 @@ if not mods or not key then
     key = "space"
 end
 
---- 切换豆包浏览器的显示/隐藏状态
+--- 切换 Chrome 的显示/隐藏状态
 local function toggleBrowser()
     -- 通过 bundleID 精确查找应用
     local app = hs.application.get(bundleID)

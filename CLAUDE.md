@@ -5,7 +5,7 @@
 每个 package 目录下**必须**包含 `package.json` 文件，即使是纯 Lua 包也不例外：
 
 - 有 Node.js 依赖的包：参考 `compress/package.json`、`upload/package.json`，需声明 `dependencies`、`type: "module"` 等字段
-- 纯 Lua 包（无 Node.js 依赖）：参考 `doubao-browser/package.json`、`utils/package.json`，设置 `private: true`，`setup` 脚本输出提示无需安装依赖
+- 纯 Lua 包（无 Node.js 依赖）：参考 `chrome/package.json`、`utils/package.json`，设置 `private: true`，`setup` 脚本输出提示无需安装依赖
 
 ## 新建 Package 检查清单
 
