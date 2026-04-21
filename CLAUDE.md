@@ -13,6 +13,7 @@
 
 1. `packages/<name>/init.lua` — 核心功能模块
 2. `packages/<name>/package.json` — 包元信息（**不可遗漏**）
-3. `init.lua` — 追加 `require("packages.<name>")`
-4. `.env` — 追加相关配置项
-5. `.env.example` — 同步追加配置模板
+3. `packages/<name>/README.md` — 模块文档说明（**不可遗漏**）
+4. `init.lua` — 追加 `require("packages.<name>")`
+5. `.env` — 追加相关配置项
+6. `.env.example` — 同步追加配置模板
