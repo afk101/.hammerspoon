@@ -4,14 +4,14 @@ local Utils = require("packages.utils")
 -- 从 .env 读取配置
 local env = Utils.loadEnv()
 
--- cmux bundleID，用于查找正在运行的应用
-local bundleID = env["CMUX_BUNDLE"] or "com.cmuxterm.app"
+-- warp bundleID，用于查找正在运行的应用
+local bundleID = env["WARP_BUNDLE"] or "dev.warp.Warp-Stable"
 
--- cmux 应用路径，用于启动应用
-local appPath = env["CMUX_APP"] or "/Applications/cmux.app"
+-- warp 应用路径，用于启动应用
+local appPath = env["WARP_APP"] or "/Applications/Warp.app"
 
 -- 解析快捷键配置
-local mods, key = Utils.parseShortcut(env["CMUX_SHORTCUT"])
+local mods, key = Utils.parseShortcut(env["WARP_SHORTCUT"])
 
 -- 如果未配置或解析失败，使用默认快捷键 Cmd + Alt + E
 if not mods or not key then
@@ -19,8 +19,8 @@ if not mods or not key then
     key = "E"
 end
 
---- 切换 cmux 应用的显示/隐藏状态
-local function toggleCmux()
+--- 切换 warp 应用的显示/隐藏状态
+local function toggleWarp()
     -- 通过 bundleID 精确查找应用
     local app = hs.application.get(bundleID)
     if app then
@@ -39,6 +39,6 @@ local function toggleCmux()
 end
 
 -- 将快捷键对象存储在模块表 M 中，防止被垃圾回收机制清理导致快捷键失效
-M.toggleHotkey = hs.hotkey.bind(mods, key, toggleCmux)
+M.toggleHotkey = hs.hotkey.bind(mods, key, toggleWarp)
 
 return M
